@@ -57,21 +57,27 @@ class Missile:
 # Function to create a random math problem
 def generate_problem():
     num1 = random.randint(0, 12)
-    num2 = random.randint(0, 12)
+    num2 = random.randint(1, 12)  # Avoid zero for division
     operation = random.choice(['+', '-', '*', '/'])
     if operation == '+':
         problem = f"{num1} + {num2}"
         answer = str(num1 + num2)
     elif operation == '-':
+        num1, num2 = max(num1, num2), min(num1, num2)  # Ensure num1 >= num2
         problem = f"{num1} - {num2}"
         answer = str(num1 - num2)
     elif operation == '*':
         problem = f"{num1} * {num2}"
         answer = str(num1 * num2)
-    else:
+    else:  # Division
+        num2 = random.randint(1, 12)  # Ensure divisor is not zero
+        num1 = num2 * random.randint(1, 12)  # Make num1 a multiple of num2
         problem = f"{num1} / {num2}"
-        answer = str(num1 // num2)  # Use integer division for simplicity
+        answer = str(num1 // num2)  # Integer division
     return problem, answer
+
+
+
 
 # Main game loop
 while running:
@@ -95,8 +101,8 @@ while running:
             else:
                 user_input += event.unicode
 
-    # Spawn new asteroids
-    if random.random() < 0.01:
+    # Spawn new asteroids (only if fewer than 5 on screen)
+    if len(asteroids) < 5 and random.random() < 0.01:
         problem, answer = generate_problem()
         x = random.randint(50, 750)
         asteroids.append(Asteroid(x, 0, problem, answer))
