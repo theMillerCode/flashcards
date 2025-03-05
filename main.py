@@ -41,18 +41,28 @@ class Asteroid:
         problem_text = small_font.render(self.problem, True, BLACK)
         screen.blit(problem_text, (self.x, self.y))
 
-# Missile class
+# Updated Missile class
 class Missile:
-    def __init__(self, x, y):
+    def __init__(self, x, y, target):
         self.x = x
         self.y = y
-        self.speed = 5
+        self.target = target  # Store the target asteroid
+        self.speed = 5  # Speed of the missile
 
     def move(self):
-        self.y -= self.speed
+        # Calculate horizontal and vertical distance to target
+        dx = self.target.x - self.x
+        dy = self.target.y - self.y
+
+        # Calculate the direction to move
+        distance = (dx**2 + dy**2)**0.5  # Pythagorean theorem for distance
+        if distance != 0:  # Avoid division by zero
+            self.x += self.speed * (dx / distance)  # Normalize dx
+            self.y += self.speed * (dy / distance)  # Normalize dy
 
     def draw(self):
         pygame.draw.rect(screen, RED, (self.x, self.y, 5, 10))
+
 
 # Function to create a random math problem
 def generate_problem():
@@ -91,8 +101,8 @@ while running:
             if event.key == pygame.K_RETURN:
                 for asteroid in asteroids:
                     if user_input == asteroid.answer:
-                        missiles.append(Missile(base_x, base_y))
-                        asteroids.remove(asteroid)
+                        missiles.append(Missile(base_x, base_y, asteroid))  # Target this asteroid
+                        user_input = ''
                         score += 1
                         break
                 user_input = ''
@@ -113,11 +123,16 @@ while running:
         asteroid.draw()
 
     # Move and draw missiles
-    for missile in missiles:
+    for missile in missiles[:]:
         missile.move()
         missile.draw()
-        if missile.y < 0:
-            missiles.remove(missile)
+        # Check if the missile has reached its target
+        if abs(missile.x - missile.target.x) < 5 and abs(missile.y - missile.target.y) < 5:
+            missiles.remove(missile)  # Remove the missile
+            if missile.target in asteroids:
+                asteroids.remove(missile.target)  # Remove the asteroid
+                break                               
+
 
     # Render user input
     input_text = font.render(user_input, True, BLACK)
