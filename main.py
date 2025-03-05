@@ -122,7 +122,7 @@ while game_running:
         # Spawn new asteroids (only if fewer than 5 on screen)
         if len(asteroids) < 5 and random.random() < 0.01:
             problem, answer = generate_problem()
-            x = random.randint(50, 750)
+            x = random.randint(50, 675)
             y = 0  # Always start at the top of the screen
             new_asteroid = Asteroid(x, y, problem, answer)
         
