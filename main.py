@@ -100,7 +100,7 @@ while game_running:
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
+                if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):  # Check both Enter keys
                     for asteroid in asteroids:
                         if user_input == asteroid.answer:
                             missiles.append(Missile(base_x, base_y, asteroid))  # Target this asteroid
@@ -110,6 +110,12 @@ while game_running:
                     user_input = ''
                 elif event.key == pygame.K_BACKSPACE:
                     user_input = user_input[:-1]
+                elif event.key in (pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4,
+                                pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9,
+                                pygame.K_KP0, pygame.K_KP1, pygame.K_KP2, pygame.K_KP3,
+                                pygame.K_KP4, pygame.K_KP5, pygame.K_KP6, pygame.K_KP7,
+                                pygame.K_KP8, pygame.K_KP9):  # Check both number and number pad keys
+                    user_input += event.unicode
                 else:
                     user_input += event.unicode
 
