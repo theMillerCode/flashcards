@@ -63,6 +63,7 @@ class Missile:
     def draw(self):
         pygame.draw.rect(screen, RED, (self.x, self.y, 5, 10))
 
+
 # Explosion class
 class Explosion:
     def __init__(self, x, y):
@@ -113,9 +114,11 @@ while running:
             if event.key == pygame.K_RETURN:
                 for asteroid in asteroids:
                     if user_input == asteroid.answer:
-                        missiles.append(Missile(base_x, base_y, asteroid))  # Target this asteroid
-                        user_input = ''
-                        score += 1
+                        if asteroid in asteroids:  # Ensure the target asteroid still exists
+                            missiles.append(Missile(base_x, base_y, asteroid))  # Target this asteroid
+                            user_input = ''
+                            score += 1
+                            break
                         break
                 user_input = ''
             elif event.key == pygame.K_BACKSPACE:
@@ -130,14 +133,21 @@ while running:
         asteroids.append(Asteroid(x, 0, problem, answer))
 
     # Move and draw asteroids
-    for asteroid in asteroids:
+    for asteroid in asteroids[:]:
         asteroid.move()
         asteroid.draw()
+
+        # Check if asteroid reaches the bottom
+        if asteroid.y > 600:  # Assuming screen height is 600
+            explosions.append(Explosion(asteroid.x, 600))  # Explosion at the bottom
+            asteroids.remove(asteroid)  # Remove the asteroid
+            score -= 1  # Deduct a point
 
     # Move and draw missiles
     for missile in missiles[:]:
         missile.move()
         missile.draw()
+
         # Check if the missile has reached its target
         if abs(missile.x - missile.target.x) < 5 and abs(missile.y - missile.target.y) < 5:
             explosions.append(Explosion(missile.target.x, missile.target.y))  # Create explosion
