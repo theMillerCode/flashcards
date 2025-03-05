@@ -63,6 +63,18 @@ class Missile:
     def draw(self):
         pygame.draw.rect(screen, RED, (self.x, self.y, 5, 10))
 
+# Explosion class
+class Explosion:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.timer = 20  # Duration of the explosion (in frames)
+
+    def draw(self):
+        if self.timer > 0:
+            pygame.draw.circle(screen, RED, (self.x, self.y), 30 - self.timer // 2)
+            self.timer -= 1
+
 
 # Function to create a random math problem
 def generate_problem():
@@ -87,12 +99,12 @@ def generate_problem():
     return problem, answer
 
 
-
+explosions = []
 
 # Main game loop
 while running:
     screen.fill(WHITE)
-
+    
     # Event handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -128,12 +140,17 @@ while running:
         missile.draw()
         # Check if the missile has reached its target
         if abs(missile.x - missile.target.x) < 5 and abs(missile.y - missile.target.y) < 5:
+            explosions.append(Explosion(missile.target.x, missile.target.y))  # Create explosion
             missiles.remove(missile)  # Remove the missile
             if missile.target in asteroids:
                 asteroids.remove(missile.target)  # Remove the asteroid
-                break                               
 
-
+    # Move and draw explosions
+    for explosion in explosions[:]:
+        explosion.draw()
+        if explosion.timer <= 0:  # Remove explosion once the timer ends
+            explosions.remove(explosion)
+    
     # Render user input
     input_text = font.render(user_input, True, BLACK)
     screen.blit(input_text, (350, 500))
