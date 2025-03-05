@@ -117,7 +117,19 @@ while game_running:
         if len(asteroids) < 5 and random.random() < 0.01:
             problem, answer = generate_problem()
             x = random.randint(50, 750)
-            asteroids.append(Asteroid(x, 0, problem, answer))
+            y = 0  # Always start at the top of the screen
+            new_asteroid = Asteroid(x, y, problem, answer)
+        
+            # Check for overlap with existing asteroids
+            overlap = False
+            for asteroid in asteroids:
+                if abs(new_asteroid.x - asteroid.x) < 50 and abs(new_asteroid.y - asteroid.y) < 50:
+                    overlap = True
+                    break
+
+            # Add the asteroid only if there's no overlap
+            if not overlap:
+                asteroids.append(new_asteroid)
 
         # Move and draw asteroids
         for asteroid in asteroids[:]:
